@@ -1,5 +1,9 @@
+// ignore_for_file: sized_box_for_whitespace
+
+import 'package:carvalho/db/reserva_db.dart';
 import 'package:carvalho/db/room_db.dart';
 import 'package:carvalho/models/hospede.dart';
+import 'package:carvalho/models/reserva.dart';
 import 'package:carvalho/models/room.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -14,9 +18,10 @@ class CheckinPage extends StatefulWidget {
 
 class _CheckinPageState extends State<CheckinPage> {
   GlobalKey _key = GlobalKey();
-  RoomDB db = RoomDB();
+  ReservaDB db = ReservaDB();
+  RoomDB roomDB = RoomDB();
 
-  TextEditingController roomNumber = TextEditingController();
+  int roomNumber = 0;
   DateTime? checkin;
   DateTime? checkout;
   RoomStatus status = RoomStatus.ocupado;
@@ -34,18 +39,7 @@ class _CheckinPageState extends State<CheckinPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextFormField(
-              keyboardType: TextInputType.number,
-              controller: roomNumber,
-              decoration: const InputDecoration(
-                  label: Text("Numero do quarto"),
-                  border: OutlineInputBorder()),
-              validator: (value) {
-                return (value == null || value.isEmpty)
-                    ? 'Campo Obrigatório'
-                    : null;
-              },
-            ),
+            _buildDropdown(),
             _buildCheckIn(),
             _buildCheckOut(),
             Container(
@@ -119,22 +113,24 @@ class _CheckinPageState extends State<CheckinPage> {
               child: IconButton(
                 icon: const Icon(Icons.add),
                 iconSize: 64,
-                onPressed: () {
+                onPressed: () async {
                   FormState state = _key.currentState as FormState;
                   if (state.validate() &&
                       checkin != null &&
                       checkout != null &&
                       hospedes.isNotEmpty) {
-                    db.reservas().then((value) {
-                      Room room = Room(
+                    db.reservas().then((value) async {
+                      Room quarto = await RoomDB().getByNumber(roomNumber);
+
+                      Reserva room = Reserva(
                           id: value.length + 1,
-                          number: int.parse(roomNumber.text),
+                          quarto: quarto,
                           checkin: checkin!,
                           checkout: checkout!,
-                          status: status,
                           hospedes: hospedes);
 
-                      db.insertRoom(room);
+                      db.insertReserva(room);
+                      Navigator.of(context).pop();
                     });
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -146,6 +142,48 @@ class _CheckinPageState extends State<CheckinPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return FutureBuilder<List<Room>>(
+      future: roomDB.quartos(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            List<Room> rooms = snapshot.data!;
+            return DropdownMenu(
+              width: MediaQuery.of(context).size.width,
+              label: const Text("Quarto"),
+              onSelected: (value) {
+                if (value != null) {
+                  roomNumber = value;
+                }
+              },
+              dropdownMenuEntries: rooms
+                  .map((e) => DropdownMenuEntry(
+                      value: e.number, label: e.number.toString()))
+                  .toList(),
+            );
+          } else {
+            return const Column(
+              children: [
+                Icon(Icons.error),
+                Text("Error fetching data"),
+              ],
+            );
+          }
+        } else {
+          return const Column(
+            children: [
+              Icon(Icons.question_mark),
+              Text("Unknown state"),
+            ],
+          );
+        }
+      },
     );
   }
 

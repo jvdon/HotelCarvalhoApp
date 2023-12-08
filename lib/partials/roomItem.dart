@@ -1,14 +1,14 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:carvalho/db/reserva_db.dart';
 import 'package:carvalho/models/hospede.dart';
-import 'package:carvalho/models/room.dart';
-import 'package:carvalho/pages/main_page.dart';
+import 'package:carvalho/models/reserva.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class RoomItem extends StatefulWidget {
-  Room room;
+  Reserva room;
   RoomItem({super.key, required this.room});
 
   @override
@@ -16,30 +16,15 @@ class RoomItem extends StatefulWidget {
 }
 
 class _RoomItemState extends State<RoomItem> {
-
-
-  Map<RoomStatus, Color> colors = {
-    RoomStatus.pronto: Colors.green[800]!,
-    RoomStatus.usado: Colors.deepOrange[700]!,
-    RoomStatus.ocupado: Colors.red[800]!,
-  };
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Column(
         children: [
           const Icon(Icons.hotel),
-          Text(widget.room.number.toString(),
+          Text(widget.room.quarto.number.toString(),
               style: GoogleFonts.openSans(fontSize: 16)),
         ],
-      ),
-      trailing: GestureDetector(
-        child: CircleAvatar(
-            backgroundColor: colors[widget.room.status], radius: 15),
-        onLongPress: () {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(widget.room.status.name)));
-        },
       ),
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,6 +57,14 @@ class _RoomItemState extends State<RoomItem> {
           )
         ],
       ),
+      trailing: IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () async {
+          await ReservaDB().deleteReserva(widget.room);
+          setState(() {
+          });
+        },
+      ),
       onTap: () {
         List<Hospede> hospedes = widget.room.hospedes;
         showDialog(
@@ -82,7 +75,9 @@ class _RoomItemState extends State<RoomItem> {
                 height: 500,
                 child: ListView.separated(
                   separatorBuilder: (context, index) {
-                    return Divider(color: Colors.deepPurple,);
+                    return const Divider(
+                      color: Colors.deepPurple,
+                    );
                   },
                   itemCount: hospedes.length,
                   itemBuilder: (context, index) {
