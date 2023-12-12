@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:carvalho/models/hospede.dart';
 import 'package:carvalho/models/reserva.dart';
@@ -9,6 +10,8 @@ import 'package:sqflite/sqflite.dart';
 class RoomDB {
   Future<Database> _getDatabase() async {
     String path = join(await getDatabasesPath(), 'quartos.db');
+    print(File.fromUri(Uri.parse(path)).exists());
+    print(path);
 
     return openDatabase(
       path,

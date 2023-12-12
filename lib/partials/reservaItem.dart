@@ -4,6 +4,7 @@ import 'package:carvalho/db/reserva_db.dart';
 import 'package:carvalho/models/hospede.dart';
 import 'package:carvalho/models/reserva.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
@@ -16,6 +17,12 @@ class RoomItem extends StatefulWidget {
 }
 
 class _RoomItemState extends State<RoomItem> {
+  Map<ReservaStatus, Color> colors = {
+    ReservaStatus.ATIVA: Colors.green,
+    ReservaStatus.FECHADA: Colors.red,
+    ReservaStatus.PAGA: Colors.yellow
+  };
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -57,13 +64,37 @@ class _RoomItemState extends State<RoomItem> {
           )
         ],
       ),
-      trailing: IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () async {
-          await ReservaDB().deleteReserva(widget.room);
-          setState(() {
-          });
-        },
+      trailing: Column(
+        children: [
+          switch (widget.room.status) {
+            ReservaStatus.ATIVA => IconButton(
+                icon: Icon(Icons.check),
+                tooltip: "Marcar como paga",
+                onPressed: () async {
+                  await ReservaDB().updateStatus(widget.room.id, ReservaStatus.PAGA);
+                  setState(() {});
+                },
+              ),
+            ReservaStatus.FECHADA => IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () async {
+                  await ReservaDB().deleteReserva(widget.room);
+                  setState(() {});
+                },
+              ),
+            ReservaStatus.PAGA => IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () async {
+                  await ReservaDB().deleteReserva(widget.room);
+                  setState(() {});
+                },
+              ),
+          },
+          CircleAvatar(
+            radius: 4,
+            backgroundColor: colors[widget.room.status],
+          ),
+        ],
       ),
       onTap: () {
         List<Hospede> hospedes = widget.room.hospedes;

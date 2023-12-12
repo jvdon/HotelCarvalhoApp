@@ -22,9 +22,9 @@ class _CheckinPageState extends State<CheckinPage> {
   RoomDB roomDB = RoomDB();
 
   int roomNumber = 0;
+  ReservaStatus status = ReservaStatus.ATIVA;
   DateTime? checkin;
   DateTime? checkout;
-  RoomStatus status = RoomStatus.ocupado;
   List<Hospede> hospedes = [];
   TextEditingController preco = TextEditingController(text: "50");
 
@@ -39,7 +39,8 @@ class _CheckinPageState extends State<CheckinPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDropdown(),
+            _buildQuarto(),
+            _buildStatus(),
             _buildCheckIn(),
             _buildCheckOut(),
             Container(
@@ -127,7 +128,8 @@ class _CheckinPageState extends State<CheckinPage> {
                           quarto: quarto,
                           checkin: checkin!,
                           checkout: checkout!,
-                          hospedes: hospedes);
+                          hospedes: hospedes,
+                          status: status);
 
                       db.insertReserva(room);
                       Navigator.of(context).pop();
@@ -145,7 +147,7 @@ class _CheckinPageState extends State<CheckinPage> {
     );
   }
 
-  Widget _buildDropdown() {
+  Widget _buildQuarto() {
     return FutureBuilder<List<Room>>(
       future: roomDB.quartos(),
       builder: (context, snapshot) {
@@ -184,6 +186,19 @@ class _CheckinPageState extends State<CheckinPage> {
           );
         }
       },
+    );
+  }
+
+  Widget _buildStatus() {
+    return DropdownMenu(
+      onSelected: (value) {
+        if(value != null){
+          status = value;
+        }
+      },
+      dropdownMenuEntries: ReservaStatus.values
+          .map((e) => DropdownMenuEntry(value: e, label: e.name))
+          .toList(),
     );
   }
 

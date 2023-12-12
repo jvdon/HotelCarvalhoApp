@@ -16,6 +16,7 @@ class _RoomAddState extends State<RoomAdd> {
     RoomStatus status = RoomStatus.pronto;
     GlobalKey formKey = GlobalKey();
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text("Room registration page"),
       ),
@@ -30,16 +31,15 @@ class _RoomAddState extends State<RoomAdd> {
                   label: Text("Numero do quarto"),
                   border: OutlineInputBorder()),
               validator: (value) {
-                return (value == null || value.isEmpty)
-                    ? 'Campo Obrigatório'
-                    : null;
+                if (value == null || value.isEmpty) {
+                  return 'Campo obrigatório';
+                }
+                return null;
               },
             ),
             DropdownMenu(
               width: MediaQuery.of(context).size.width,
-              menuStyle: MenuStyle(
-                alignment: Alignment.center
-              ),
+              menuStyle: MenuStyle(alignment: Alignment.center),
               onSelected: (value) {
                 if (value != null) {
                   status = value;

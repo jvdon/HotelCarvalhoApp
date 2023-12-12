@@ -6,7 +6,7 @@ import 'package:carvalho/models/room.dart';
 import 'package:carvalho/pages/checkin_page.dart';
 import 'package:carvalho/pages/reservas_page.dart';
 import 'package:carvalho/pages/rooms_page.dart';
-import 'package:carvalho/partials/roomItem.dart';
+import 'package:carvalho/partials/reservaItem.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {

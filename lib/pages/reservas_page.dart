@@ -1,7 +1,7 @@
 import 'package:carvalho/db/reserva_db.dart';
 import 'package:carvalho/models/reserva.dart';
 import 'package:carvalho/pages/checkin_page.dart';
-import 'package:carvalho/partials/roomItem.dart';
+import 'package:carvalho/partials/reservaItem.dart';
 import 'package:flutter/material.dart';
 
 class ReservasPage extends StatefulWidget {

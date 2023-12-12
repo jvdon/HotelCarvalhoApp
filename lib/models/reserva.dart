@@ -12,6 +12,7 @@ class Reserva {
   late List<Hospede> hospedes = [];
   late int preco = 50;
   late int valor;
+  late ReservaStatus status;
 
   Reserva({
     this.id = 0,
@@ -20,6 +21,7 @@ class Reserva {
     required this.hospedes,
     required this.quarto,
     this.preco = 50,
+    required this.status
   }) {
     valor = (checkout.difference(checkin).inDays) * hospedes.length * preco;
   }
@@ -32,11 +34,18 @@ class Reserva {
       'checkout': DateFormat('dd/MM/yyyy').format(checkout),
       'hospedes': jsonEncode(hospedes.map((e) => e.toMap()).toList()),
       'preco': preco,
-      'valor': valor
+      'valor': valor,
+      'status': status.name
     };
   }
 
   Reserva.fromJSON(Map json) {
+    Map<String, ReservaStatus> statuses = {
+      "ATIVA": ReservaStatus.ATIVA,
+      "FECHADA": ReservaStatus.FECHADA,
+      "PAGA": ReservaStatus.PAGA
+    };
+
     List checkinS = (json['checkin'] as String)
         .split("/")
         .map((e) => int.parse(e))
@@ -53,7 +62,10 @@ class Reserva {
     hospedes = (jsonDecode(json['hospedes']) as List)
         .map((e) => Hospede.fromMap(e))
         .toList();
+    status = statuses[json["status"]]!;
     preco = json['preco'] as int;
     valor = (checkout.difference(checkin).inDays) * hospedes.length * preco;
   }
 }
+
+enum ReservaStatus { ATIVA, FECHADA, PAGA }
