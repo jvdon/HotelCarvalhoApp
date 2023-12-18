@@ -2,19 +2,16 @@ import 'package:carvalho/db/room_db.dart';
 import 'package:carvalho/models/room.dart';
 import 'package:flutter/material.dart';
 
-class RoomAdd extends StatefulWidget {
+class RoomAdd extends StatelessWidget {
   const RoomAdd({super.key});
+  static final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  @override
-  State<RoomAdd> createState() => _RoomAddState();
-}
-
-class _RoomAddState extends State<RoomAdd> {
   @override
   Widget build(BuildContext context) {
     TextEditingController roomNumber = TextEditingController();
+    TextEditingController roomSize = TextEditingController();
+
     RoomStatus status = RoomStatus.pronto;
-    GlobalKey formKey = GlobalKey();
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
@@ -30,6 +27,18 @@ class _RoomAddState extends State<RoomAdd> {
               decoration: const InputDecoration(
                   label: Text("Numero do quarto"),
                   border: OutlineInputBorder()),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Campo obrigatório';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              controller: roomSize,
+              decoration: const InputDecoration(
+                  label: Text("Capacidade"), border: OutlineInputBorder()),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Campo obrigatório';
@@ -54,11 +63,9 @@ class _RoomAddState extends State<RoomAdd> {
               onPressed: () async {
                 FormState state = formKey.currentState as FormState;
                 if (state.validate()) {
-                  List rooms = await RoomDB().quartos();
-
                   RoomDB().insertRoom(Room(
-                      // id: rooms.length + 1,
                       number: int.parse(roomNumber.text),
+                      size: int.parse(roomSize.text),
                       status: status));
                   Navigator.of(context).pop();
                 }

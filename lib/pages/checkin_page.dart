@@ -17,7 +17,7 @@ class CheckinPage extends StatefulWidget {
 }
 
 class _CheckinPageState extends State<CheckinPage> {
-  GlobalKey _key = GlobalKey();
+  final GlobalKey _key = GlobalKey();
   ReservaDB db = ReservaDB();
   RoomDB roomDB = RoomDB();
 
@@ -43,6 +43,7 @@ class _CheckinPageState extends State<CheckinPage> {
             _buildStatus(),
             _buildCheckIn(),
             _buildCheckOut(),
+            // Hospedes
             Container(
               width: double.infinity,
               height: 130,
@@ -96,7 +97,6 @@ class _CheckinPageState extends State<CheckinPage> {
             ),
             TextFormField(
               keyboardType: TextInputType.number,
-              inputFormatters: [],
               controller: preco,
               decoration: const InputDecoration(
                   label: Text("Preço por pessoa/noite"),
@@ -149,25 +149,30 @@ class _CheckinPageState extends State<CheckinPage> {
 
   Widget _buildQuarto() {
     return FutureBuilder<List<Room>>(
-      future: roomDB.quartos(),
+      future: roomDB.getAvailable(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CircularProgressIndicator();
         } else if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
             List<Room> rooms = snapshot.data!;
-            return DropdownMenu(
-              width: MediaQuery.of(context).size.width,
-              label: const Text("Quarto"),
-              onSelected: (value) {
-                if (value != null) {
-                  roomNumber = value;
-                }
-              },
-              dropdownMenuEntries: rooms
-                  .map((e) => DropdownMenuEntry(
-                      value: e.number, label: e.number.toString()))
-                  .toList(),
+
+            return Padding(
+              padding: EdgeInsets.all(5),
+              child: DropdownMenu(
+                initialSelection: roomNumber,
+                width: MediaQuery.of(context).size.width,
+                label: const Text("Quarto"),
+                onSelected: (value) {
+                  if (value != null) {
+                    roomNumber = value;
+                  }
+                },
+                dropdownMenuEntries: rooms
+                    .map((e) => DropdownMenuEntry(
+                        value: e.number, label: "${e.number} - ${e.size}x👦"))
+                    .toList(),
+              ),
             );
           } else {
             return const Column(
@@ -190,15 +195,20 @@ class _CheckinPageState extends State<CheckinPage> {
   }
 
   Widget _buildStatus() {
-    return DropdownMenu(
-      onSelected: (value) {
-        if(value != null){
-          status = value;
-        }
-      },
-      dropdownMenuEntries: ReservaStatus.values
-          .map((e) => DropdownMenuEntry(value: e, label: e.name))
-          .toList(),
+    return Padding(
+      padding: EdgeInsets.all(5),
+      child: DropdownMenu(
+        label: Text("Status"),
+        initialSelection: status,
+        onSelected: (value) {
+          if (value != null) {
+            status = value;
+          }
+        },
+        dropdownMenuEntries: ReservaStatus.values
+            .map((e) => DropdownMenuEntry(value: e, label: e.name))
+            .toList(),
+      ),
     );
   }
 
@@ -255,7 +265,7 @@ class _CheckinPageState extends State<CheckinPage> {
   }
 
   Widget _hospedeForm() {
-    GlobalKey _key = GlobalKey();
+    final GlobalKey _key = GlobalKey();
     TextEditingController nome = TextEditingController();
     TextEditingController cpf = TextEditingController();
     TextEditingController idade = TextEditingController();
@@ -265,17 +275,19 @@ class _CheckinPageState extends State<CheckinPage> {
 
     return Dialog(
       shape: const BeveledRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(15),
-        ),
-        side: BorderSide(color: Colors.deepPurple),
+        // borderRadius: BorderRadius.all(
+        //   Radius.circular(15),
+        // ),
+        // side: BorderSide(color: Colors.deepPurple),
       ),
       child: Container(
+        alignment: Alignment.center,
         width: 500,
-        height: 400,
+        height: 300,
         child: Form(
           key: _key,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 15),
               TextFormField(

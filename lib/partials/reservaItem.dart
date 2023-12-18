@@ -26,6 +26,7 @@ class _RoomItemState extends State<RoomItem> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      style: ListTileStyle.list,
       leading: Column(
         children: [
           const Icon(Icons.hotel),
@@ -71,22 +72,15 @@ class _RoomItemState extends State<RoomItem> {
                 icon: Icon(Icons.check),
                 tooltip: "Marcar como paga",
                 onPressed: () async {
-                  await ReservaDB().updateStatus(widget.room.id, ReservaStatus.PAGA);
-                  setState(() {});
+                  await ReservaDB()
+                      .updateStatus(widget.room, ReservaStatus.PAGA);
                 },
               ),
-            ReservaStatus.FECHADA => IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () async {
-                  await ReservaDB().deleteReserva(widget.room);
-                  setState(() {});
-                },
-              ),
+            ReservaStatus.FECHADA => Icon(Icons.done),
             ReservaStatus.PAGA => IconButton(
-                icon: Icon(Icons.delete),
+                icon: Icon(Icons.close),
                 onPressed: () async {
-                  await ReservaDB().deleteReserva(widget.room);
-                  setState(() {});
+                  await ReservaDB().updateStatus(widget.room, ReservaStatus.FECHADA);
                 },
               ),
           },

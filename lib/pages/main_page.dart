@@ -1,12 +1,5 @@
-import 'dart:async';
-
-import 'package:carvalho/db/reserva_db.dart';
-import 'package:carvalho/models/reserva.dart';
-import 'package:carvalho/models/room.dart';
-import 'package:carvalho/pages/checkin_page.dart';
 import 'package:carvalho/pages/reservas_page.dart';
 import 'package:carvalho/pages/rooms_page.dart';
-import 'package:carvalho/partials/reservaItem.dart';
 import 'package:flutter/material.dart';
 
 class MainPage extends StatefulWidget {
@@ -23,7 +16,8 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Hotel Carvalho - Management"),
+        title: const Text("Hotel Carvalho - Management",
+            textAlign: TextAlign.center),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (value) {

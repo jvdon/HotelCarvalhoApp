@@ -3,20 +3,15 @@ import 'dart:io';
 import 'package:carvalho/db/room_db.dart';
 import 'package:carvalho/models/reserva.dart';
 import 'package:carvalho/models/room.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqflite.dart' as sql;
-
+import 'package:path_provider/path_provider.dart';
 
 class ReservaDB {
   Future<Database> _getDatabase() async {
-    String path = join(await getDatabasesPath(), 'reservas.db');
-    
-    print(await sql.getDatabasesPath());
-    // print(await File.fromUri(Uri.parse(path)).exists());
-    print(path);
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+
+    String path = join(documentsDirectory.path, "reservas.db");
 
     return openDatabase(
       path,
@@ -24,11 +19,6 @@ class ReservaDB {
         return db.execute(
             "CREATE TABLE reservas(id INTEGER PRIMARY KEY AUTOINCREMENT,quarto STRING,checkin DATETIME NOT NULL,checkout DATETIME NOT NULL,hospedes STRING DEFAULT \"[]\",preco INTEGER DEFAULT 50,valor INTEGER NOT NULL, status STRING NOT NULL DEFAULT 'ATIVA');");
       },
-      // onConfigure: (db) {
-      //   return db.execute(
-      //       "CREATE TABLE reservas(id INTEGER PRIMARY KEY AUTOINCREMENT,quarto STRING,checkin DATETIME NOT NULL,checkout DATETIME NOT NULL,hospedes STRING DEFAULT \"[]\",preco INTEGER DEFAULT 50,valor INTEGER NOT NULL, status STRING NOT NULL DEFAULT 'ATIVA')");
-
-      // },
       version: 1,
     );
   }
@@ -66,9 +56,12 @@ class ReservaDB {
     );
   }
 
-  Future<void> updateStatus(int id, ReservaStatus status) async {
+  Future<void> updateStatus(Reserva reserva, ReservaStatus status) async {
     final db = await _getDatabase();
+    if (status == ReservaStatus.FECHADA || status == ReservaStatus.PAGA) {
+      RoomDB().updateStatus(reserva.quarto.number, RoomStatus.usado);
+    }
 
-    db.update('reservas', {'status': status.name}, where: 'id = $id');
+    db.update('reservas', {'status': status.name}, where: 'id = ${reserva.id}');
   }
 }

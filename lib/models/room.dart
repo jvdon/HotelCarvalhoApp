@@ -1,16 +1,13 @@
-import 'dart:convert';
-
-import 'package:carvalho/models/hospede.dart';
-import 'package:intl/intl.dart';
-
 class Room {
   // late int id = 0;
   late int number;
   late RoomStatus status = RoomStatus.pronto;
+  late int size;
 
   Room({
     // this.id = 0,
     required this.number,
+    required this.size,
     required this.status,
   });
 
@@ -18,6 +15,7 @@ class Room {
     return {
       // 'id': id,
       'number': number,
+      'size': size,
       'status': status.name,
     };
   }
@@ -32,11 +30,12 @@ class Room {
     // id = json['id'];
     number = json["number"];
     status = statuses[json["status"]]!;
+    size = json['size'] ?? -1;
   }
 
   @override
   String toString() {
-    return "Room > { $number - ${status.name} }";
+    return "Room > { $number - ${status.name} - ${size}x💂‍♂️}";
   }
 }
 

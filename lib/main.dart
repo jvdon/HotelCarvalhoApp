@@ -6,11 +6,7 @@ import 'package:carvalho/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-
-// import 'package:sqflite/sqflite.dart';
-
 void main() async {
-  print(Platform.operatingSystem);
   if (Platform.isWindows || Platform.isLinux) {
     // Initialize FFI
     sqfliteFfiInit();
@@ -18,7 +14,6 @@ void main() async {
   // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
   // this step, it will use the sqlite version available on the system.
   databaseFactory = databaseFactoryFfi;
-
 
   runApp(const MyApp());
 }
@@ -31,12 +26,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

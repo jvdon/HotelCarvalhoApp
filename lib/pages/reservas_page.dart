@@ -16,7 +16,6 @@ Future<List<Reserva>> rooms = db.reservas();
 int valorTotal = 0;
 
 class _ReservasPageState extends State<ReservasPage> {
-
   @override
   void initState() {
     // TODO: implement initState

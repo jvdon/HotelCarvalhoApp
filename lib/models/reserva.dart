@@ -14,15 +14,14 @@ class Reserva {
   late int valor;
   late ReservaStatus status;
 
-  Reserva({
-    this.id = 0,
-    required this.checkin,
-    required this.checkout,
-    required this.hospedes,
-    required this.quarto,
-    this.preco = 50,
-    required this.status
-  }) {
+  Reserva(
+      {this.id = 0,
+      required this.checkin,
+      required this.checkout,
+      required this.hospedes,
+      required this.quarto,
+      this.preco = 50,
+      required this.status}) {
     valor = (checkout.difference(checkin).inDays) * hospedes.length * preco;
   }
 
