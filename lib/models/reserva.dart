@@ -29,8 +29,8 @@ class Reserva {
     return {
       'id': id,
       'quarto': jsonEncode(quarto.toMap()),
-      'checkin': DateFormat('yyyy/MM/dd').format(checkin),
-      'checkout': DateFormat('yyyy/MM/dd').format(checkout),
+      'checkin': DateFormat('dd/MM/yyyy').format(checkin),
+      'checkout': DateFormat('dd/MM/yyyy').format(checkout),
       'hospedes': jsonEncode(hospedes.map((e) => e.toMap()).toList()),
       'preco': preco,
       'valor': valor,
@@ -45,10 +45,19 @@ class Reserva {
       "PAGA": ReservaStatus.PAGA
     };
 
+    List checkinS = (json['checkin'] as String)
+        .split("/")
+        .map((e) => int.parse(e))
+        .toList();
+    List checkoutS = (json['checkout'] as String)
+        .split("/")
+        .map((e) => int.parse(e))
+        .toList();
+
     id = json['id'];
     quarto = Room.fromMap(jsonDecode(json['quarto']));
-    checkin = DateTime.parse(json["checkin"]);
-    checkout = DateTime.parse(json["checkout"]);
+    checkin = DateTime(checkinS.last, checkinS[1], checkinS.first);
+    checkout = DateTime(checkoutS.last, checkoutS[1], checkoutS.first);
     hospedes = (jsonDecode(json['hospedes']) as List)
         .map((e) => Hospede.fromMap(e))
         .toList();

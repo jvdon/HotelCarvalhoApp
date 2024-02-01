@@ -5,6 +5,7 @@ import 'package:carvalho/db/room_db.dart';
 import 'package:carvalho/models/hospede.dart';
 import 'package:carvalho/models/reserva.dart';
 import 'package:carvalho/models/room.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -226,7 +227,7 @@ class _CheckinPageState extends State<CheckinPage> {
         showDatePicker(
           context: context,
           initialDate: DateTime.now(),
-          firstDate: DateTime.now(),
+          firstDate: DateTime.now().subtract(Duration(days: 10)),
           lastDate: DateTime.now().add(const Duration(days: 60)),
           confirmText: "Confirmar",
           helpText: "Data de check-in",
@@ -252,7 +253,7 @@ class _CheckinPageState extends State<CheckinPage> {
         showDatePicker(
           context: context,
           initialDate: DateTime.now(),
-          firstDate: DateTime.now(),
+          firstDate: DateTime.now().subtract(Duration(days: 10)),
           lastDate: DateTime.now().add(const Duration(days: 60)),
           confirmText: "Confirmar",
           helpText: "Data de check-in",

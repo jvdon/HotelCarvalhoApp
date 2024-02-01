@@ -4,19 +4,16 @@ import 'dart:io';
 
 import 'package:carvalho/pages/main_page.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() async {
-  Supabase supabase = await Supabase.initialize(
-      url: 'https://ykyaeveulcnoqpfsmtzg.supabase.co',
-      anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlreWFldmV1bGNub3FwZnNtdHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDM4ODQzMDUsImV4cCI6MjAxOTQ2MDMwNX0.39wNANEJ3TRmmScLMLNNtbXw19X1we9n8N6wo6xl07g',
-      authOptions:
-          FlutterAuthClientOptions(authFlowType: AuthFlowType.implicit));
-
-  await supabase.client.auth.signInWithPassword(
-      email: 'carvalho.hotel@gmail.com', password: '35551441');
+  if (Platform.isWindows || Platform.isLinux) {
+    // Initialize FFI
+    sqfliteFfiInit();
+  }
+  // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
+  // this step, it will use the sqlite version available on the system.
+  databaseFactory = databaseFactoryFfi;
 
   runApp(const MyApp());
 }

@@ -46,8 +46,6 @@ dependencies:
   pix_flutter: ^2.2.0
   qr_flutter: ^4.1.0
   uuid: ^4.2.2
-  supabase_flutter: ^2.0.2
-  google_sign_in: ^6.1.6
 
 dev_dependencies:
   flutter_test:
