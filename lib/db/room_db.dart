@@ -1,77 +1,58 @@
-import 'dart:io';
-
 import 'package:carvalho/models/room.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-
-import 'package:path_provider/path_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RoomDB {
-  Future<Database> _getDatabase() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-
-    String path = join(documentsDirectory.path, "quartos.db");
-
-    String sql =
-        "CREATE TABLE quartos(id INTEGER PRIMARY KEY,number INTEGER,status STRING NOT NULL DEFAULT \"pronto\", size INTEGER NOT NULL);";
-
-    return openDatabase(
-      path,
-      onCreate: (db, version) {
-        return db.execute(sql);
-      },
-      // onConfigure: (db) {
-      //   print("Here!");
-      //   return db.execute(
-      //     "DROP TABLE quartos; $sql",
-      //   );
-      // },
-      version: 1,
-    );
+  String tableName = 'quarto';
+  Future<SupabaseClient> _getDatabase() async {
+    return Supabase.instance.client;
   }
 
   Future<void> insertRoom(Room reserva) async {
     // Get a reference to the database.
     final db = await _getDatabase();
 
-    await db.insert(
-      'quartos',
-      reserva.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.from('quarto').insert(
+          reserva.toMap(),
+        );
   }
 
   Future<List<Room>> quartos() async {
     // Get a reference to the database.
     final db = await _getDatabase();
 
-    final List<Map<String, dynamic>> maps = await db.query('quartos');
+    try {
+      final List<Map<String, dynamic>> maps = await db.from(tableName).select();
 
-    return List.generate(maps.length, (i) => Room.fromMap(maps[i]));
+      return List.generate(maps.length, (i) => Room.fromMap(maps[i]));
+    } catch (e) {
+      print("Error:\n${e}");
+      return [];
+    }
   }
 
   Future<void> updateStatus(int number, RoomStatus status) async {
     final db = await _getDatabase();
 
-    db.update('quartos', {'status': status.name}, where: 'number = $number');
+    db.from('quarto').update({'status': status.name}).match({'number': number});
   }
 
   Future<void> deleteRoom(int number) async {
     final db = await _getDatabase();
-    db.delete('quartos', where: 'number = $number');
+    db.from(tableName).delete().match({'number': number});
   }
 
   Future<Room> getByNumber(int number) async {
     final db = await _getDatabase();
-    return Room.fromMap(
-        (await db.query('quartos', where: 'number = $number', limit: 1))[0]);
+    List values =
+        await db.from(tableName).select().eq('number', number).limit(1);
+    return Room.fromMap(values[0]);
   }
 
   Future<List<Room>> getAvailable() async {
     final db = await _getDatabase();
 
     final List<Map<String, dynamic>> maps =
-        await db.query('quartos', where: "status = 'pronto'");
+        await db.from(tableName).select().eq('status', 'pronto');
 
     return List.generate(maps.length, (i) {
       return Room.fromMap(maps[i]);

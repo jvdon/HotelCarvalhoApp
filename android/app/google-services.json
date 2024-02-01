@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "761687955007",
+    "project_id": "hotel-carvalho-app",
+    "storage_bucket": "hotel-carvalho-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761687955007:android:00c6ca6755311b6fd20a8a",
+        "android_client_info": {
+          "package_name": "com.example.carvalho"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfLfLFpgoNKCKZtaMzEZpN6Ex5qKSqNtA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

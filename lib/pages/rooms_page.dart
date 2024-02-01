@@ -45,17 +45,35 @@ class _RoomsPageState extends State<RoomsPage> {
             );
           } else {
             List<Room> quartos = snapshot.data!;
-
+            List<Room> disponiveis = quartos
+                .where((element) => element.status == RoomStatus.pronto)
+                .toList();
+            int pessoas = 0;
+            disponiveis.forEach(
+              (e) {
+                pessoas += e.size;
+              },
+            );
             return Scaffold(
               appBar: AppBar(
                 title: Text(
-                    "Disponíveis: ${quartos.where((element) => element.status == RoomStatus.pronto).toList().length}"),
+                    "Disponíveis: ${disponiveis.length}\nPessoas: ${pessoas}"),
                 actions: [
                   IconButton(
                     icon: Icon(Icons.refresh),
                     onPressed: () {
                       setState(() {
                         rooms = db.quartos();
+                        disponiveis = quartos
+                            .where((element) =>
+                                element.status == RoomStatus.pronto)
+                            .toList();
+                        pessoas = 0;
+                        disponiveis.forEach(
+                          (e) {
+                            pessoas += e.size;
+                          },
+                        );
                       });
                     },
                   ),

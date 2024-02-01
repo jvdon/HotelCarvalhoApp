@@ -26,7 +26,7 @@ class _CheckinPageState extends State<CheckinPage> {
   DateTime? checkin;
   DateTime? checkout;
   List<Hospede> hospedes = [];
-  TextEditingController preco = TextEditingController(text: "50");
+  TextEditingController preco = TextEditingController(text: "60");
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class _CheckinPageState extends State<CheckinPage> {
             _buildStatus(),
             _buildCheckIn(),
             _buildCheckOut(),
-            // Hospedes
+            //* Hospedes View
             Container(
               width: double.infinity,
               height: 130,
@@ -83,6 +83,7 @@ class _CheckinPageState extends State<CheckinPage> {
                 },
               ),
             ),
+            //? Add hospede button
             IconButton(
               icon: const Icon(Icons.add_reaction_sharp),
               iconSize: 64,
@@ -95,6 +96,7 @@ class _CheckinPageState extends State<CheckinPage> {
                 );
               },
             ),
+            // PPN
             TextFormField(
               keyboardType: TextInputType.number,
               controller: preco,
@@ -107,6 +109,7 @@ class _CheckinPageState extends State<CheckinPage> {
                     : null;
               },
             ),
+            //! Add button
             Container(
               width: double.infinity,
               height: 100,
@@ -124,11 +127,11 @@ class _CheckinPageState extends State<CheckinPage> {
                       Room quarto = await RoomDB().getByNumber(roomNumber);
 
                       Reserva room = Reserva(
-                          id: value.length + 1,
                           quarto: quarto,
                           checkin: checkin!,
                           checkout: checkout!,
                           hospedes: hospedes,
+                          preco: int.parse(preco.text),
                           status: status);
 
                       db.insertReserva(room);
@@ -275,11 +278,11 @@ class _CheckinPageState extends State<CheckinPage> {
 
     return Dialog(
       shape: const BeveledRectangleBorder(
-        // borderRadius: BorderRadius.all(
-        //   Radius.circular(15),
-        // ),
-        // side: BorderSide(color: Colors.deepPurple),
-      ),
+          // borderRadius: BorderRadius.all(
+          //   Radius.circular(15),
+          // ),
+          // side: BorderSide(color: Colors.deepPurple),
+          ),
       child: Container(
         alignment: Alignment.center,
         width: 500,

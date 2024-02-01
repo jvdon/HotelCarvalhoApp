@@ -2,12 +2,17 @@ import 'package:carvalho/db/room_db.dart';
 import 'package:carvalho/models/room.dart';
 import 'package:flutter/material.dart';
 
-class RoomAdd extends StatelessWidget {
+class RoomAdd extends StatefulWidget {
   const RoomAdd({super.key});
-  static final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  @override
+  State<RoomAdd> createState() => _RoomAddState();
+}
 
+class _RoomAddState extends State<RoomAdd> {
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
     TextEditingController roomNumber = TextEditingController();
     TextEditingController roomSize = TextEditingController();
 

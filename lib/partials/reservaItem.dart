@@ -6,7 +6,9 @@ import 'package:carvalho/models/reserva.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:pix_flutter/pix_flutter.dart';
 
 class RoomItem extends StatefulWidget {
   Reserva room;
@@ -42,8 +44,6 @@ class _RoomItemState extends State<RoomItem> {
             children: [
               Text("${widget.room.hospedes.length}x"),
               const Icon(Icons.person),
-              const SizedBox(width: 10),
-              Text("PPN R\$ ${widget.room.preco.toString()}")
             ],
           ),
         ],
@@ -72,6 +72,67 @@ class _RoomItemState extends State<RoomItem> {
                 icon: Icon(Icons.check),
                 tooltip: "Marcar como paga",
                 onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Container(
+                          height: 80,
+                          child: Column(
+                            children: [
+                              Text("Pagamento via PIX?"),
+                              Text("Valor: R\$ ${widget.room.valor}"),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: Text("X"),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.check),
+                                    onPressed: () {
+                                      PixFlutter pixFlutter = PixFlutter(
+                                        payload: Payload(
+                                          pixKey: '53612825615',
+                                          merchantName: 'Hotel Carvalho',
+                                          merchantCity: 'Guaranesia, MG',
+                                          txid: '63040BD7',
+                                          amount: widget.room.valor.toString(),
+                                        ),
+                                      );
+
+                                      Navigator.of(context).pop();
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: Container(
+                                              width: 300,
+                                              height: 300,
+                                              child: QrImageView(
+                                                data: pixFlutter.getQRCode(),
+                                                version: QrVersions.auto,
+                                                backgroundColor: Colors.white,
+                                                size: 2.0,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
                   await ReservaDB()
                       .updateStatus(widget.room, ReservaStatus.PAGA);
                 },
@@ -80,7 +141,8 @@ class _RoomItemState extends State<RoomItem> {
             ReservaStatus.PAGA => IconButton(
                 icon: Icon(Icons.close),
                 onPressed: () async {
-                  await ReservaDB().updateStatus(widget.room, ReservaStatus.FECHADA);
+                  await ReservaDB()
+                      .updateStatus(widget.room, ReservaStatus.FECHADA);
                 },
               ),
           },

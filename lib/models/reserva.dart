@@ -10,7 +10,7 @@ class Reserva {
   late DateTime checkin;
   late DateTime checkout;
   late List<Hospede> hospedes = [];
-  late int preco = 50;
+  late int preco = 60;
   late int valor;
   late ReservaStatus status;
 
@@ -20,7 +20,7 @@ class Reserva {
       required this.checkout,
       required this.hospedes,
       required this.quarto,
-      this.preco = 50,
+      this.preco = 60,
       required this.status}) {
     valor = (checkout.difference(checkin).inDays) * hospedes.length * preco;
   }
@@ -29,8 +29,8 @@ class Reserva {
     return {
       'id': id,
       'quarto': jsonEncode(quarto.toMap()),
-      'checkin': DateFormat('dd/MM/yyyy').format(checkin),
-      'checkout': DateFormat('dd/MM/yyyy').format(checkout),
+      'checkin': DateFormat('yyyy/MM/dd').format(checkin),
+      'checkout': DateFormat('yyyy/MM/dd').format(checkout),
       'hospedes': jsonEncode(hospedes.map((e) => e.toMap()).toList()),
       'preco': preco,
       'valor': valor,
@@ -45,19 +45,10 @@ class Reserva {
       "PAGA": ReservaStatus.PAGA
     };
 
-    List checkinS = (json['checkin'] as String)
-        .split("/")
-        .map((e) => int.parse(e))
-        .toList();
-    List checkoutS = (json['checkout'] as String)
-        .split("/")
-        .map((e) => int.parse(e))
-        .toList();
-
     id = json['id'];
     quarto = Room.fromMap(jsonDecode(json['quarto']));
-    checkin = DateTime(checkinS.last, checkinS[1], checkinS.first);
-    checkout = DateTime(checkoutS.last, checkoutS[1], checkoutS.first);
+    checkin = DateTime.parse(json["checkin"]);
+    checkout = DateTime.parse(json["checkout"]);
     hospedes = (jsonDecode(json['hospedes']) as List)
         .map((e) => Hospede.fromMap(e))
         .toList();
